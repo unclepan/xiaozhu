@@ -1,0 +1,555 @@
+/*
+  CQ LOCAL —— 移动端三页原型样式（首页 / 详情 / 支付）
+  色板与尺寸直接沿用原型 cq_local_payment_demo (2).html，未做二次设计。
+  这里用固定深色底而非主题 token：原型本身就是深色产品页，不跟随站点主题。
+*/
+
+.cq-root {
+  background: #0d0f12;
+  color: #fff;
+  min-height: 100vh;
+  --cq-card: #171a1f;
+  --cq-muted: #9aa3af;
+  --cq-line: #2a2f37;
+  --cq-accent: #ff5b36;
+}
+
+.cq-root *,
+.cq-root *::before,
+.cq-root *::after {
+  box-sizing: border-box;
+}
+
+/* ── 首页 ───────────────────────────────────────────── */
+
+.cq-app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 32px;
+}
+
+.cq-hero {
+  padding: 28px 18px 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 91, 54, 0.32), transparent 34%),
+    linear-gradient(180deg, #15181d, #0d0f12);
+}
+
+.cq-brand {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #ffd0c4;
+}
+
+.cq-h1 {
+  font-size: 34px;
+  line-height: 1.04;
+  margin: 10px 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cq-sub {
+  color: var(--cq-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cq-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 16px 8px;
+}
+
+.cq-tab {
+  border: 1px solid var(--cq-line);
+  background: var(--cq-card);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.cq-tab.active {
+  background: #fff;
+  color: #111;
+}
+
+.cq-grid {
+  display: grid;
+  gap: 14px;
+  padding: 10px 14px 18px;
+}
+
+.cq-card {
+  background: var(--cq-card);
+  border: 1px solid var(--cq-line);
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease;
+}
+
+.cq-card:active {
+  transform: scale(0.99);
+}
+
+.cq-photo {
+  height: 170px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: #20242b;
+}
+
+.cq-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: rgba(0, 0, 0, 0.68);
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cq-save {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: #25cf77;
+  color: #062b16;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.cq-body {
+  padding: 14px;
+}
+
+.cq-title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.cq-meta {
+  font-size: 12px;
+  color: var(--cq-muted);
+  margin: 6px 0 10px;
+}
+
+.cq-price {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.cq-old {
+  font-size: 13px;
+  color: #747b86;
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+/* ── 通用按钮 ───────────────────────────────────────── */
+
+.cq-btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cq-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cq-primary {
+  background: var(--cq-accent);
+  color: #fff;
+}
+
+.cq-secondary {
+  background: #242932;
+  color: #fff;
+}
+
+/* ── 详情页 ─────────────────────────────────────────── */
+
+.cq-detail {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 92px;
+}
+
+.cq-detail-photo {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  background-color: #20242b;
+}
+
+.cq-back {
+  position: absolute;
+  top: 18px;
+  left: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+.cq-detail-content {
+  padding: 18px;
+}
+
+.cq-detail-content h2 {
+  font-size: 28px;
+  line-height: 1.15;
+  margin: 4px 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cq-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+  color: #ffb5a3;
+}
+
+.cq-box {
+  margin-top: 14px;
+  background: var(--cq-card);
+  border: 1px solid var(--cq-line);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.cq-box h3 {
+  font-size: 14px;
+  margin: 0 0 9px;
+  font-weight: 800;
+}
+
+.cq-box p,
+.cq-box li {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #d8dde5;
+}
+
+.cq-box ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.cq-cta {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(480px, 100%);
+  padding: 10px 14px max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  background: rgba(13, 15, 18, 0.97);
+  border-top: 1px solid var(--cq-line);
+  z-index: 120;
+}
+
+.cq-cta .cq-btn {
+  flex: 1;
+}
+
+/* ── 支付面板 ───────────────────────────────────────── */
+
+.cq-paypanel {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 200;
+  padding: 18px;
+  overflow: auto;
+}
+
+.cq-sheet {
+  max-width: 440px;
+  margin: 24px auto;
+  background: #fff;
+  color: #111;
+  border-radius: 24px;
+  padding: 18px;
+}
+
+.cq-sheet-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+}
+
+.cq-close {
+  border: 0;
+  background: #eee;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.cq-pay-title {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.cq-pay-amount {
+  font-size: 42px;
+  font-weight: 950;
+  margin: 4px 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.cq-wechat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #078e48;
+  font-weight: 850;
+  font-size: 14px;
+}
+
+.cq-qrwrap {
+  background: #f6f7f8;
+  border-radius: 18px;
+  padding: 12px;
+  margin: 14px 0;
+  text-align: center;
+}
+
+.cq-qrwrap img {
+  width: 100%;
+  max-width: 310px;
+  border-radius: 14px;
+  display: block;
+  margin: 0 auto;
+}
+
+.cq-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.cq-sheet .cq-primary {
+  width: 100%;
+  background: #111;
+  color: #fff;
+  margin-top: 10px;
+}
+
+.cq-success {
+  text-align: center;
+  padding: 18px 8px;
+}
+
+.cq-success h2 {
+  margin: 6px 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.cq-check {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e9fff3;
+  color: #08a653;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.cq-code {
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  margin: 8px 0;
+}
+
+.cq-small {
+  font-size: 12px;
+  color: #777;
+}
+
+.cq-demo {
+  background: #fff4d8;
+  color: #745000;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 12px;
+}
+
+/* ── 补充：地址弹窗 / 空态 / 骨架 ───────────────────── */
+
+/* ── 补充：券码邮件弹窗（支付成功页 Send to Email） ──── */
+
+.cq-success-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cq-success-actions .cq-btn {
+  flex: 1;
+  width: auto;
+  /* 抵消 .cq-sheet .cq-primary 的整宽/上间距，保证两颗按钮等高并排 */
+  margin-top: 0;
+  padding: 14px 10px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.cq-input {
+  width: 100%;
+  border: 1px solid var(--cq-line);
+  background: #0f1216;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+}
+
+.cq-input::placeholder {
+  color: #6b7280;
+}
+
+.cq-input:focus {
+  border-color: var(--cq-accent);
+}
+
+.cq-input:disabled {
+  opacity: 0.6;
+}
+
+.cq-dialog .cq-dialog-hint {
+  margin: 0 0 10px;
+  color: var(--cq-muted);
+  font-size: 13px;
+}
+
+.cq-dialog .cq-dialog-error {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ff8f75;
+}
+
+/* ── 地址弹窗 / 空态 / 骨架（原有） ─────────────────── */
+
+.cq-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.cq-dialog {
+  width: 100%;
+  max-width: 380px;
+  background: var(--cq-card);
+  border: 1px solid var(--cq-line);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.cq-dialog h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.cq-dialog p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d8dde5;
+}
+
+.cq-dialog-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cq-dialog-actions .cq-btn {
+  flex: 1;
+}
+
+.cq-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--cq-muted);
+  font-size: 14px;
+}
+
+.cq-skeleton {
+  height: 170px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #171a1f, #20242b, #171a1f);
+  background-size: 200% 100%;
+  animation: cq-shimmer 1.2s infinite linear;
+}
+
+@keyframes cq-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

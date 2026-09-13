@@ -1,0 +1,58 @@
+// ─────────────────────────────────────────────────────────────
+// Prisma Schema (v7)
+//   - 数据库连接 URL 已按 v7 约定迁移到 prisma.config.ts
+//   - 运行时通过 @prisma/adapter-mariadb 适配器连接 MySQL
+//   文档：https://pris.ly/d/prisma-schema
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/// CQ LOCAL 优惠商品
+model Deal {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  title         String
+  summary       String?
+  category      String   @default("TOP")
+  cover         String   @default("")
+  price         Int      @default(0)
+  originalPrice Int      @default(0)
+  description   String?
+  /// 换行分隔的「包含项」列表
+  includes      String   @default("")
+  address       String?
+  area          String?
+  /// 高德坐标 GCJ-02：经度 / 纬度，用于「打开高德地图」
+  lng           Float?
+  lat           Float?
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orders        DealOrder[]
+
+  @@index([category])
+  @@map("deals")
+}
+
+/// CQ LOCAL 订单（demo：券码 + 自报已付）
+model DealOrder {
+  id       Int    @id @default(autoincrement())
+  code     String @unique
+  dealId   Int
+  deal     Deal   @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  status   String @default("PENDING")
+  /// 用户在支付成功页「Send to Email」时回填的收件邮箱，便于商家端核对
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("deal_orders")
+}

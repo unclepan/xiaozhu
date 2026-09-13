@@ -1,0 +1,55 @@
+{
+  // 使用 IntelliSense 了解相关属性。
+  // 悬停以查看现有属性的描述。
+  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // 调试 Next.js 服务端（API Route / Server Component / proxy.ts / Server Action）
+      "type": "node",
+      "request": "launch",
+      "name": "Next.js: 调试服务端",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    },
+    {
+      // 调试 Next.js 浏览器端（客户端组件 / "use client"）
+      // 需先手动跑 `pnpm dev`，再用此项 attach
+      "type": "chrome",
+      "request": "launch",
+      "name": "Next.js: 调试浏览器端",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      // 调试 prisma/scripts 下任意 tsx 脚本（聚焦当前打开文件）
+      "type": "node",
+      "request": "launch",
+      "name": "tsx: 调试当前脚本",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["exec", "tsx", "${file}"],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      // 调试 Vitest（聚焦当前打开的测试文件）
+      "type": "node",
+      "request": "launch",
+      "name": "Vitest: 调试当前测试",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["exec", "vitest", "run", "${relativeFile}"],
+      "cwd": "${workspaceFolder}",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

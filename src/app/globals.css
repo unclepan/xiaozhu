@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+
+/* 使用 class-based dark mode（通过 .dark 类切换，而非 prefers-color-scheme） */
+@custom-variant dark (&:where(.dark, .dark *));

@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────
+# Docker Compose —— 生产 / 开发服务器部署编排
+# ─────────────────────────────────────────────────────────────
+# 适用场景：
+#   1. 本地开发机一键起容器自测（IMAGE 留空 → 自动按 Dockerfile 构建）
+#   2. 生产服务器拉取 GHCR 镜像运行（IMAGE=ghcr.io/<owner>/<repo>:main-<sha>）
+#
+# 设计要点：
+#   - 单一服务 app，无数据库容器（数据库是腾讯云 CynosDB，外部托管）
+#   - 镜像源由 ${IMAGE} 控制，缺省走本地构建
+#   - 配置全部走 ${...} 占位 + .env，.env 不入仓库，靠 CI 远端写入
+#   - 健康检查复用 Dockerfile 内置 HEALTHCHECK
+#
+# 常用命令：
+#   docker compose up -d --build       # 本地：构建并后台启动
+#   docker compose pull && docker compose up -d   # 远端：拉新镜像并滚动更新
+#   docker compose logs -f app          # 跟随日志
+#   docker compose down                 # 停止并清理容器
+# ─────────────────────────────────────────────────────────────
+
+services:
+  # ── 应用服务 ──────────────────────────────────────────────
+  app:
+    # 镜像：远端用 IMAGE 指定 GHCR 上的精确 tag；本地未设置时回退到本地构建
+    image: ${IMAGE:-xiaozhu:latest}
+
+    # 本地无镜像时按 Dockerfile 构建；远端 CI 部署不会触发（因为 IMAGE 已存在）
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # 容器名称（固定，方便 docker logs / docker exec 等命令引用）
+    container_name: xiaozhu
+
+    # 重启策略：除非手动停止，否则崩溃后自动重启
+    restart: unless-stopped
+
+    # 加载 .env 文件中的环境变量
+    env_file:
+      - .env
+
+    # 显式声明的环境变量（优先级高于 env_file 中的同名变量）
+    environment:
+      NODE_ENV: production           # 生产模式
+      PORT: 3000                     # 应用监听端口
+      HOSTNAME: 0.0.0.0              # 监听所有网络接口
+      NEXT_TELEMETRY_DISABLED: "1"   # 关闭 Next.js 匿名遥测
+
+    # 端口映射：宿主机端口可通过 .env 中的 HOST_PORT 覆盖（默认 3000）
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+
+    # 持久化 /admin 上传的图片（容器以 uid 1001 nextjs 运行，宿主目录需可写）
+    #   首次部署前执行：mkdir -p data/uploads && sudo chown -R 1001:1001 data/uploads
+    volumes:
+      - ./data/uploads:/app/public/uploads/deals
+
+    # 日志配置：按大小切片，避免长时间运行后磁盘膨胀
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"   # 单个日志文件最大 10MB
+        max-file: "5"     # 最多保留 5 个日志文件

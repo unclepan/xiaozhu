@@ -1,0 +1,92 @@
+# ─────────────────────────────────────────────────────────────
+# CI Workflow: Lint + 单元测试
+# ─────────────────────────────────────────────────────────────
+# 触发时机：
+#   1. 向 main 分支 push 代码（且改动了 src/prisma/配置等关键路径）
+#   2. 向 main 分支发起 Pull Request（全量跑，不受路径过滤限制）
+# ─────────────────────────────────────────────────────────────
+name: test
+
+# ── 触发条件 ────────────────────────────────────────────────
+on:
+  # push 事件：代码推送到 main 分支时触发
+  push:
+    branches:
+      - main
+    # paths 过滤：只有以下路径的文件有变动时才触发
+    # 避免改了 README / 文档等无关文件也浪费 CI 时间
+    paths:
+      - '.github/workflows/**'     # workflow 自身改动（如当前文件）
+      - 'src/**'                   # 源码目录
+      - 'prisma/**'                # 数据库 schema / 迁移文件
+      - 'public/**'                # 静态资源（图片、字体、CSS 等）
+      - 'package.json'             # 依赖声明
+      - 'pnpm-lock.yaml'           # lockfile（依赖版本锁定）
+      - 'pnpm-workspace.yaml'      # pnpm monorepo 配置
+      - 'tsconfig.json'            # TypeScript 编译配置
+      - 'eslint.config.mjs'        # ESLint 规则配置
+      - 'vitest.config.ts'         # 测试框架配置
+      - 'next.config.ts'           # Next.js 构建配置
+      - 'postcss.config.mjs'       # PostCSS / Tailwind CSS 配置
+
+  # pull_request 事件：向 main 分支发起 PR 时触发
+  # 注意：PR 没有 paths 过滤，保证每次 PR 都全量检查
+  pull_request:
+    branches:
+      - main
+
+# ── 任务定义 ────────────────────────────────────────────────
+jobs:
+  # Job ID，唯一标识这个任务
+  test:
+    # Job 显示名称（在 GitHub Actions 页面展示）
+    name: lint + unit test
+
+    # 运行环境：GitHub 提供的最新 Ubuntu 虚拟机
+    runs-on: ubuntu-latest
+
+    # 超时时间：超过 15 分钟自动取消，防止卡死消耗 Actions 额度
+    timeout-minutes: 15
+
+    # ── 执行步骤（按顺序串行执行，任一步失败则后续不执行）──
+    steps:
+      # Step 1: 拉取仓库代码到虚拟机工作目录
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: 安装 pnpm 包管理器
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # 指定 pnpm 版本（与 Dockerfile 中的 PNPM_VERSION 保持一致）
+          version: 11.7.0
+          # false = 不自动执行 pnpm install，后面手动安装以便控制参数
+          run_install: false
+
+      # Step 3: 安装 Node.js 运行时
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Node.js 版本（当前使用最新版，与 Dockerfile 中 NODE_VERSION 对齐更稳妥）
+          node-version: 24
+          # 启用 pnpm 依赖缓存，加速后续 pnpm install
+          cache: pnpm
+
+      # Step 4: 安装项目依赖
+      - name: Install dependencies
+        # --frozen-lockfile：严格按 pnpm-lock.yaml 安装
+        # 如果 lockfile 与 package.json 不一致则直接报错，防止依赖漂移
+        run: pnpm install --frozen-lockfile
+
+      # Step 5: 生成 Prisma Client 类型安全代码
+      # 输出到 src/generated/prisma/，lint 和类型检查会引用这些类型
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      # Step 6: 代码规范检查（ESLint）
+      - name: Lint
+        run: pnpm lint
+
+      # Step 7: 运行单元测试（Vitest）
+      - name: Unit test
+        run: pnpm test
