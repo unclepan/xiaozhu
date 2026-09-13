@@ -344,7 +344,7 @@ jobs:
           #   -i ~/.ssh/id_rsa   → 指定私钥文件路径
           #   bash -se           → -s: 从 stdin 读取命令；-e: 任何命令失败立即退出
           #   <<EOF ... EOF      → Here Document：将多行脚本通过 SSH 传入远端 bash 执行
-          ssh -i ~/.ssh/id_rsa "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}" bash -se <<EOF
+          ssh -i ~/.ssh/id_rsa "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}" bash -se <<'EOF'
             # set 参数说明：
             #   -e: 任何命令返回非零退出码时立即终止脚本
             #   -u: 引用未定义变量时立即报错（防止拼写错误被忽略）
@@ -372,7 +372,7 @@ jobs:
             #      → >>: 追加写入（不覆盖文件其他内容）
             #      → docker-compose.yml 中用 \${IMAGE} 占位符引用此变量
             sed -i '/^IMAGE=/d' .env
-            echo "IMAGE=${IMAGE}:${TAG_SHA}" >> .env
+            echo "IMAGE=${{ needs.build-and-push.outputs.image }}:${{ needs.build-and-push.outputs.tag_sha }}" >> .env
 
             # 3) 准备上传目录（宿主机持久化目录，挂载进容器 /app/public/uploads）
             #    后台上传的封面图写在 public/uploads/deals 下，容器重建不能丢
