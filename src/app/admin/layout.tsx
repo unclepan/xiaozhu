@@ -9,6 +9,12 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
+// 整个 /admin/** 强制运行时动态渲染（SSR），禁止在 next build 阶段静态预渲染。
+// 原因：子页面（如 /admin/redeem）会在渲染时直接查数据库（prisma），而 build 环境连不到库，
+// 一旦被判定为静态路由就会在构建期执行查询并触发连接池超时（P2039）导致 build 失败。
+// 后台页本就不该被缓存，每次请求实时取数才正确。此项会向所有 admin 子段传播。
+export const dynamic = "force-dynamic";
+
 /**
  * /admin 门禁
  *
