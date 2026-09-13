@@ -14,7 +14,8 @@ import path from "node:path";
 //     - 不需要额外的读取路由，Next 直接静态直出
 //
 //   注意事项：
-//     - 容器重建会丢失，需在 docker-compose 挂 volume 持久化
+//     - 容器重建会丢失，docker-compose 已把宿主的 ./public/uploads 挂到容器
+//       /app/public/uploads（本地=项目根 public/uploads，服务器=~/app/xiaozhu/public/uploads）
 //     - 已在 .gitignore 中忽略 public/uploads/*，避免混入仓库与镜像
 //     - 若将来要改到 public 之外，只需改本文件的 UPLOAD_DIR / URL_PREFIX，
 //       并补一个读取路由即可，调用方无需变动

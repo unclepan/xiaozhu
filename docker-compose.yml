@@ -50,10 +50,23 @@ services:
     ports:
       - "${HOST_PORT:-3000}:3000"
 
-    # 持久化 /admin 上传的图片（容器以 uid 1001 nextjs 运行，宿主目录需可写）
-    #   首次部署前执行：mkdir -p data/uploads && sudo chown -R 1001:1001 data/uploads
+    # 持久化后台上传的图片（容器以 uid 1001 nextjs 运行，宿主目录必须可写）
+    #
+    #   容器内路径：/app/public/uploads
+    #     代码落盘目录是 public/uploads/deals（见 src/lib/admin/uploads.ts），
+    #     这里挂父目录 uploads，后续新增子目录（如 /uploads/avatars）无需改 compose。
+    #
+    #   宿主路径：${UPLOAD_HOST_DIR:-./public/uploads}
+    #     相对路径基于本文件所在目录解析，本地与服务器自动各自生效：
+    #       本地：/Users/yangpan/Desktop/xiaozhu/public/uploads
+    #       服务器：~/app/xiaozhu/public/uploads
+    #     需要换位置时，在 .env 里写 UPLOAD_HOST_DIR=/absolute/path 即可覆盖。
+    #
+    #   权限：宿主目录必须对容器内 uid 1001 可写，否则上传报 EACCES
+    #     本地：sudo chown -R 1001:1001 public/uploads
+    #     服务器：部署流水线已自动执行（见 .github/workflows/deploy.yml），手工补也用同一条
     volumes:
-      - ./data/uploads:/app/public/uploads/deals
+      - ${UPLOAD_HOST_DIR:-./public/uploads}:/app/public/uploads
 
     # 日志配置：按大小切片，避免长时间运行后磁盘膨胀
     logging:

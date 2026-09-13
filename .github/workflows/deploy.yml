@@ -374,7 +374,22 @@ jobs:
             sed -i '/^IMAGE=/d' .env
             echo "IMAGE=${IMAGE}:${TAG_SHA}" >> .env
 
-            # 3) 拉取新镜像（带重试 + 卡顿超时检测）
+            # 3) 准备上传目录（宿主机持久化目录，挂载进容器 /app/public/uploads）
+            #    后台上传的封面图写在 public/uploads/deals 下，容器重建不能丢
+            #    容器以 uid 1001 (nextjs) 运行，宿主目录必须对该 uid 可写，否则上传报 EACCES
+            #    目录不存在时 docker 会自动创建，但属主是 root，所以必须先建好再 chown
+            #    只 chown 目录本身及其内容，不动 ~/app/xiaozhu 下其它文件
+            UPLOAD_ROOT="$HOME/app/xiaozhu/public/uploads"
+            mkdir -p "$UPLOAD_ROOT/deals"
+            if sudo -n true 2>/dev/null; then
+              sudo -n chown -R 1001:1001 "$UPLOAD_ROOT"
+            else
+              chown -R 1001:1001 "$UPLOAD_ROOT" || \
+                echo "==> 警告：无法 chown $UPLOAD_ROOT，若上传报 EACCES 请手工执行 chown -R 1001:1001" >&2
+            fi
+            echo "==> 上传目录已就绪：$UPLOAD_ROOT"
+
+            # 4) 拉取新镜像（带重试 + 卡顿超时检测）
             #    背景：从国内服务器拉 GHCR 镜像常因网络抖动卡死在
             #      "Downloading 12.58MB" 不报错也不退出，最终被 Job 超时取消。
             #    策略：用 timeout 命令给单次 pull 设硬性上限（PULL_TIMEOUT 秒），
@@ -408,14 +423,14 @@ jobs:
               exit 1
             fi
 
-            # 4) 滚动重启
+            # 5) 滚动重启
             #    docker compose up -d
             #      → -d: 后台运行（detached mode），不阻塞终端
             #      → 检测到镜像 tag 变更后，自动 stop 旧容器 → recreate 新容器
             #      → 如果 compose 配置没变，只重建镜像变更的服务
             docker compose up -d
 
-            # 5) 清理悬挂镜像
+            # 6) 清理悬挂镜像
             #    docker image prune -f
             #      → -f: 强制删除，不弹出确认提示
             #      → 默认删除 dangling 镜像（tag 为 <none> 的旧版本镜像）
@@ -423,7 +438,7 @@ jobs:
             #      → 避免服务器磁盘被历史镜像逐渐占满
             docker image prune -f
 
-            # 6) 注销 GHCR
+            # 7) 注销 GHCR
             #    docker logout ghcr.io
             #      → 移除本地存储的登录凭证
             #      → || true: 即使 logout 失败也继续（如本来就没登录）
